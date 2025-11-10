@@ -1,0 +1,81 @@
+name: Build ffmpeg-static for loongarch64
+
+permissions: write-all
+
+on:
+  push:
+    branches: [ "master" ]
+  pull_request:
+    branches: [ "master" ]
+  workflow_dispatch:
+jobs:
+  debian:
+    name: Build for Debian
+    runs-on: ubuntu-latest
+    permissions: write-all
+    steps:
+      - name: Maximize build space
+        uses: easimon/maximize-build-space@master
+        with:
+          root-reserve-mb: 4096
+          swap-size-mb: 2048
+          remove-dotnet: 'true'
+          remove-android: 'true'
+
+      - name: Checkout sources
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          submodules: recursive
+
+      - name: Setup QEMU
+        uses: docker/setup-qemu-action@v3
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Set up loong64 Debian container
+        uses: addnab/docker-run-action@v3
+        with:
+          image: ghcr.io/loong64/debian:trixie
+          options: --cpus=4 --platform linux/loong64 --privileged -v ${{ github.workspace }}:/work
+          run: |
+            cd /work
+            apt update; apt install sudo git curl wget jq -y
+            apt install -y appstream appstream-util bison build-essential cmake desktop-file-utils doxygen file flex gcc g++ git graphviz libcap-dev libcurl4-openssl-dev libdrm-dev libevdev-dev libgbm-dev libminiupnpc-dev libnotify-dev libnuma-dev libopus-dev libpulse-dev libssl-dev libsystemd-dev libudev-dev libwayland-dev libx11-dev libxcb-shm0-dev libxcb-xfixes0-dev libxcb1-dev libxfixes-dev libxrandr-dev libxtst-dev ninja-build npm systemd udev wget xvfb libva-dev libayatana-appindicator3-dev systemd-dev nodejs npm
+            git config --global --add safe.directory /work
+
+            # Download ffmpeg
+
+            curl -fsSLO https://github.com/loong64/ffmpeg-static/releases/download/7.1.1/ffmpeg-static-loongarch64.tar.gz
+            mkdir ffmpeg_binary && tar xf ffmpeg-static-loongarch64.tar.gz --strip-components 1 -C ffmpeg_binary
+            
+            mkdir build
+            cmake \
+            -B=build \
+            -G=Ninja \
+            -S=. \
+            -DBUILD_WERROR=ON \
+            -DCMAKE_BUILD_TYPE=Release \
+            -DCMAKE_INSTALL_PREFIX=/usr \
+            -DFFMPEG_PREPARED_BINARIES=/work/ffmpeg_binary \
+            -DSUNSHINE_ASSETS_DIR=share/sunshine \
+            -DSUNSHINE_EXECUTABLE_PATH=/usr/bin/sunshine \
+            -DSUNSHINE_ENABLE_WAYLAND=ON \
+            -DSUNSHINE_ENABLE_X11=ON \
+            -DSUNSHINE_ENABLE_DRM=ON \
+            -DSUNSHINE_PUBLISHER_NAME='multiarchstore' \
+            -DSUNSHINE_PUBLISHER_WEBSITE='https://github.com/multiarchstore/Sunshine' \
+            -DSUNSHINE_PUBLISHER_ISSUE_URL='https://github.com/multiarchstore/Sunshine'
+
+            ninja -C "build"
+
+            cpack -G DEB --config ./build/CPackConfig.cmake
+            
+      # - name: Artifact
+      #   uses: actions/upload-artifact@v4
+      #   with:
+      #     name: ffmpeg-static for Debian loong64
+      #     path: ${{ github.workspace }}/ffmpeg-static-loongarch64.tar.gz
+      #     compression-level: 0
+      #     if-no-files-found: error # 'warn' or 'ignore' are also available, defaults to `warn`
