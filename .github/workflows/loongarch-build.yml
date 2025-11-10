@@ -57,6 +57,7 @@ jobs:
             -G=Ninja \
             -S=. \
             -DBUILD_WERROR=ON \
+            -DBUILD_DOCS=OFF \
             -DCMAKE_BUILD_TYPE=Release \
             -DCMAKE_INSTALL_PREFIX=/usr \
             -DFFMPEG_PREPARED_BINARIES=/work/ffmpeg_binary \
