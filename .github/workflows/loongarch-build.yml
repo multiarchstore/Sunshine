@@ -66,6 +66,7 @@ jobs:
             -DCMAKE_INSTALL_PREFIX=/usr \
             -DOPENSSL_ROOT_DIR=/work/ffmpeg_binary \
             -DOPENSSL_USE_STATIC_LIBS=TRUE \
+            -DBOOST_USE_STATIC=TRUE \
             -DFFMPEG_PREPARED_BINARIES=/work/ffmpeg_binary \
             -DSUNSHINE_ENABLE_CUDA=OFF \
             -DSUNSHINE_ASSETS_DIR=share/sunshine \
