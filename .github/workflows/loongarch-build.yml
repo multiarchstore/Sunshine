@@ -38,7 +38,7 @@ jobs:
     env:
       BRANCH: ${{ github.head_ref || github.ref_name }}
       COMMIT: ${{ needs.release-setup.outputs.release_commit }}
-      BUILD_VERSION: ${{ needs.release-setup.outputs.release_version }
+      BUILD_VERSION: ${{ needs.release-setup.outputs.release_version }}
     permissions: write-all
     steps:
       - name: Maximize build space
