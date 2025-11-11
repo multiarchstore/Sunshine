@@ -39,7 +39,9 @@ jobs:
         with:
           image: ghcr.io/loong64/debian:trixie
           options: --cpus=4 --platform linux/loong64 --privileged -v ${{ github.workspace }}:/work
+          shell: bash
           run: |
+            set -e
             cd /work
             apt update; apt install sudo git curl wget jq -y
             apt install -y appstream appstream-util bison build-essential cmake desktop-file-utils doxygen file flex gcc g++ git graphviz libcap-dev libcurl4-openssl-dev libdrm-dev libevdev-dev libgbm-dev libminiupnpc-dev libnotify-dev libnuma-dev libopus-dev libpulse-dev libssl-dev libsystemd-dev libudev-dev libwayland-dev libx11-dev libxcb-shm0-dev libxcb-xfixes0-dev libxcb1-dev libxfixes-dev libxrandr-dev libxtst-dev ninja-build npm systemd udev wget xvfb libva-dev libayatana-appindicator3-dev systemd-dev nodejs npm
@@ -47,9 +49,11 @@ jobs:
 
             # Download ffmpeg
 
-            curl -fsSLO https://github.com/loong64/ffmpeg-static/releases/download/7.1.1/ffmpeg-static-loongarch64.tar.gz
+            curl -fsSLO https://github.com/loong64/ffmpeg-static/releases/download/7.1.1-upd1/ffmpeg-static-loongarch64.tar.gz
             mkdir ffmpeg_binary && tar xf ffmpeg-static-loongarch64.tar.gz --strip-components 1 -C ffmpeg_binary
             rm ffmpeg-static-loongarch64.tar.gz
+
+            cd ffmpeg_binary && bash ./update_pkgconfig.sh && cd ..
             
             mkdir build
             cmake \
@@ -60,6 +64,8 @@ jobs:
             -DBUILD_DOCS=OFF \
             -DCMAKE_BUILD_TYPE=Release \
             -DCMAKE_INSTALL_PREFIX=/usr \
+            -DOPENSSL_ROOT_DIR=/work/ffmpeg_binary \
+            -DOPENSSL_USE_STATIC_LIBS=TRUE \
             -DFFMPEG_PREPARED_BINARIES=/work/ffmpeg_binary \
             -DSUNSHINE_ENABLE_CUDA=OFF \
             -DSUNSHINE_ASSETS_DIR=share/sunshine \
