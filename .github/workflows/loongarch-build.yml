@@ -86,10 +86,10 @@ jobs:
             cd ffmpeg_binary && bash ./update_pkgconfig.sh && cd ..
             
             mkdir build
-            export PKG_CONFIG_PATH="$TARGET_DIR/lib/pkgconfig" 
+            export PKG_CONFIG_PATH="/work/lib/pkgconfig" 
             export CFLAGS="-I/work/include"
             export CXXFLAGS="-I/work/include"
-            export LDFLAGS="-I/work/lib"
+            export LDFLAGS="-L/work/lib"
             cmake \
             -B=build \
             -G=Ninja \
