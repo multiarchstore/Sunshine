@@ -9,9 +9,36 @@ on:
     branches: [ "master" ]
   workflow_dispatch:
 jobs:
+  release-setup:
+    name: Release Setup
+    outputs:
+      publish_release: ${{ steps.release-setup.outputs.publish_release }}
+      release_body: ${{ steps.release-setup.outputs.release_body }}
+      release_commit: ${{ steps.release-setup.outputs.release_commit }}
+      release_generate_release_notes: ${{ steps.release-setup.outputs.release_generate_release_notes }}
+      release_tag: ${{ steps.release-setup.outputs.release_tag }}
+      release_version: ${{ steps.release-setup.outputs.release_version }}
+    permissions:
+      contents: write
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+
+      - name: Release Setup
+        id: release-setup
+        uses: LizardByte/actions/actions/release_setup@v2025.917.25039
+
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
   debian:
     name: Build for Debian
     runs-on: ubuntu-latest
+    needs: release-setup
+    env:
+      BRANCH: ${{ github.head_ref || github.ref_name }}
+      COMMIT: ${{ needs.release-setup.outputs.release_commit }}
+      BUILD_VERSION: ${{ needs.release-setup.outputs.release_version }
     permissions: write-all
     steps:
       - name: Maximize build space
