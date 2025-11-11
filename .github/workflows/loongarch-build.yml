@@ -39,7 +39,7 @@ jobs:
       BRANCH: ${{ github.head_ref || github.ref_name }}
       COMMIT: ${{ needs.release-setup.outputs.release_commit }}
       BUILD_VERSION: ${{ needs.release-setup.outputs.release_version }}
-    permissions: write-all 
+    permissions: write-all
     steps:
       - name: Maximize build space
         uses: easimon/maximize-build-space@master
