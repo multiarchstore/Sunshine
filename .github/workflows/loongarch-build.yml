@@ -78,14 +78,14 @@ jobs:
             -DSUNSHINE_PUBLISHER_WEBSITE='https://github.com/multiarchstore/Sunshine' \
             -DSUNSHINE_PUBLISHER_ISSUE_URL='https://github.com/multiarchstore/Sunshine'
 
-            ninja -C "build"
+            ninja -C "build" -j $(nproc)
 
             cpack -G DEB --config ./build/CPackConfig.cmake
             
-      # - name: Artifact
-      #   uses: actions/upload-artifact@v4
-      #   with:
-      #     name: ffmpeg-static for Debian loong64
-      #     path: ${{ github.workspace }}/ffmpeg-static-loongarch64.tar.gz
-      #     compression-level: 0
-      #     if-no-files-found: error # 'warn' or 'ignore' are also available, defaults to `warn`
+      - name: Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: Sunshine for Debian loong64
+          path: ${{ github.workspace }}/build/*.deb
+          compression-level: 0
+          if-no-files-found: error # 'warn' or 'ignore' are also available, defaults to `warn`
