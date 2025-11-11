@@ -65,6 +65,7 @@ else()
         "${FFMPEG_PREPARED_BINARIES}/lib/libswscale.a"
         "${FFMPEG_PREPARED_BINARIES}/lib/libavutil.a"
         "${FFMPEG_PREPARED_BINARIES}/lib/libcbs.a"
+        "${FFMPEG_PREPARED_BINARIES}/lib/libvorbis.a" # for symbol vorbis_comment_add_tag
         ${FFMPEG_PLATFORM_LIBRARIES})
 endif()
 
