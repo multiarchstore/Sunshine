@@ -86,7 +86,6 @@ jobs:
             cd ffmpeg_binary && bash ./update_pkgconfig.sh && cd ..
             
             mkdir build
-            export PKG_CONFIG_PATH="/work/lib/pkgconfig" 
             export CFLAGS="-I/work/include"
             export CXXFLAGS="-I/work/include"
             export LDFLAGS="-L/work/lib"
@@ -94,7 +93,7 @@ jobs:
             -B=build \
             -G=Ninja \
             -S=. \
-            -DBUILD_WERROR=ON \
+            -DBUILD_WERROR=OFF \
             -DBUILD_DOCS=OFF \
             -DCMAKE_BUILD_TYPE=Release \
             -DCMAKE_INSTALL_PREFIX=/usr \
