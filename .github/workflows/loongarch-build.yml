@@ -69,6 +69,9 @@ jobs:
           shell: bash
           run: |
             set -e
+            export BRANCH="${{ github.head_ref || github.ref_name }}"
+            export COMMIT="${{ needs.release-setup.outputs.release_commit }}"
+            export BUILD_VERSION="${{ needs.release-setup.outputs.release_version }}"
             cd /work
             apt update; apt install sudo git curl wget jq -y
             apt install -y appstream appstream-util bison build-essential cmake desktop-file-utils doxygen file flex gcc g++ git graphviz libcap-dev libcurl4-openssl-dev libdrm-dev libevdev-dev libgbm-dev libminiupnpc-dev libnotify-dev libnuma-dev libopus-dev libpulse-dev libssl-dev libsystemd-dev libudev-dev libwayland-dev libx11-dev libxcb-shm0-dev libxcb-xfixes0-dev libxcb1-dev libxfixes-dev libxrandr-dev libxtst-dev ninja-build npm systemd udev wget xvfb libva-dev libayatana-appindicator3-dev systemd-dev nodejs npm
